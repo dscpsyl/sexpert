@@ -68,7 +68,7 @@ function form_creation(){
         <span class="message">Message:</span>
         <textarea id="message" placeholder="Enter text here…"></textarea>
         <br>
-        <button onclick="submit_inquiry()">Submit</button>
+        <button style="overflow: visible;" onclick="submit_inquiry()">Submit</button>
     </div>
     <?php
 }
