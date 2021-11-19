@@ -6,7 +6,7 @@
   <p> 
     Active Fork Of This Plugin
     <p>
-  <img alt="Version" src="https://img.shields.io/badge/Version-0.0.3-blue?style=flat&logo=wordpress">
+  <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/dscpsyl/sexpert?style=flat&logo=wordpress">
   <a href="https://sexinfoonline.com"><img alt="UCSB Sexinfoonline" src="https://img.shields.io/website?style=flat-square&logo=Pantheon&down_color=red&down_message=Offline&up_color=green&up_message=Online&url=https%3A%2F%2Fsexinfoonline.com"></a>
 </div>
 
