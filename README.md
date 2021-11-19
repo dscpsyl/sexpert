@@ -30,6 +30,9 @@
 ---
 
 ## Contributors
+<a href="https://github.com/dscpsyl/sexpert/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=dscpsyl/sexpert" />
+</a>
 
 --- 
 
