@@ -69,6 +69,8 @@ function render_inquiry_assigned(){
         $status = $_GET["status"];
         $where = $wpdb->prepare("AND status = %d", $status);
     }
+    $order_by = 'time';
+    $order = 'desc';
     $data = $wpdb->get_results(
         $wpdb->prepare(
             "
@@ -78,7 +80,9 @@ function render_inquiry_assigned(){
                         assigner.user_login as assigner_name
                     FROM $INQUIRY_TABLE_NAME AS i
                     LEFT JOIN $USER_TABLE_NAME AS assigner ON i.assigner_id = assigner.id
-                    WHERE i.assignee_id=%d $where",
+                    WHERE i.assignee_id=%d $where
+                    ORDER BY i.$order_by $order
+            ",
             get_current_user_id()
         )
     );

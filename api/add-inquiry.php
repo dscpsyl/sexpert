@@ -34,7 +34,7 @@ function add_inquiry(WP_REST_Request $request){
     );
     $configs = _get_config();
     $content = str_replace("{message}", $message, $configs->inquiry_received);
-    $content = str_replace("{wrap}", "\n", $content);
+    $content = str_replace("{wrap}", "<br>", $content);
     wp_mail($email, $configs->inquiry_received_title, $content);
     wp_send_json(
         array(

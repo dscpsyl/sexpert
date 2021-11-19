@@ -121,6 +121,7 @@ require_once __DIR__ . "/api/status.php";
 require_once __DIR__ . "/api/comment.php";
 require_once __DIR__ . "/api/sexpert-status.php";
 require_once __DIR__ . "/api/emergency.php";
+require_once __DIR__ . "/api/list_users.php";
 
 
 function setup_restful(){
@@ -188,6 +189,10 @@ function setup_restful(){
         'methods' => 'DELETE',
         'callback' => 'cancel_emergency',
     ));
+    register_rest_route( 'sexpert/v1', '/list_users', array(
+        'methods' => 'GET',
+        'callback' => 'list_users',
+    ));
 }
 add_action( 'rest_api_init', 'setup_restful');
 
@@ -208,6 +213,13 @@ add_action( 'wp_enqueue_scripts', 'setup_scripts' );
 add_action( 'admin_enqueue_scripts', 'setup_scripts' );
 
 add_action( 'phpmailer_init', 'send_smtp_email' );
+
+
+function mail_ct(){
+    return "text/html";
+}
+add_filter( 'wp_mail_content_type','mail_ct' );
+
 function send_smtp_email( $phpmailer ) {
     $phpmailer->isSMTP();
     $phpmailer->Host       = SMTP_HOST;

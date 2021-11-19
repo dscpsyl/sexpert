@@ -20,35 +20,55 @@ class Inquiry_List_Table extends WP_List_Table
         $this->items = $this->get_parsed_data();
     }
 
+    public function shorten($v){
+        $v = strip_tags($v);
+        if (strlen($v) < 20){
+            return $v;
+        } else {
+            return substr($v, 0, 20) . "...";
+        }
+    }
+
+    private function toggle_modal_text($v){
+        $v = preg_replace("/'/","\"",$v);
+        return "<div onclick='toggle_modal_unchange(`$v`)'>" . $this->shorten($v) . "</div>";
+    }
+
+    private function escape($v){
+        return preg_replace("/'/","\"",$v);
+    }
+
     private function get_parsed_data() {
         $result = [];
         foreach ($this->get_data() as $res){
             $result[] = array(
+                "id" => $res->id,
                 "age" => $res->age,
                 "gender" => $res->gender,
                 "country" => $res->country,
-                "message" => $res->message,
+                "message" => $this->toggle_modal_text($res->message),
                 "status" => CONVERT_STATUS_CODE($res->status),
-                "response" => $res->response ? $res->response : "No Response",
-                "time" => $res->time,
-                "assignee_name" => $res->assignee_name ? $res->assignee_name : "Not Assigned",
+                "_response" => $this->toggle_modal_text($res->response ? $res->response : "No Response"),
+                "time" => CONVERT_TIME($res->time),
+                "assignee_name" => $res->assignee_name ? $res->assignee_name : "-",
                 "assigner_name" =>
-                    $res->assigner_name ? $res->assigner_name: "Not Assigned",
+                    $res->assigner_name ? $res->assigner_name: "-",
             );
         }
         return $result;
     }
 
-    function column_age($item) {
+    function column_id($item) {
         $actions = array();
-        if ($item->assignee_name){
-            $actions["delete"] = '<a onclick="open_unassign_modal()" href="#">Unassign</a>';
-            $actions["edit"] = '<a onclick="open_assign_modal()" href="#">Reassign</a>';
+        $inquiry_id = $item["id"];
+        if (strcmp($item["assignee_name"], "-") == 0){
+            $actions["edit"] = "<a onclick=\"open_assign_modal($inquiry_id)\" href=\"#\">Assign</a>";
         } else {
-            $actions["edit"] = '<a onclick="open_assign_modal()" href="#">Assign Inquiry</a>';
+            $actions["delete"] = "<a onclick=\"unassign_inquiry($inquiry_id, -1)\" href=\"#\">Unassign</a>";
+            $actions["edit"] = "<a onclick=\"open_assign_modal($inquiry_id)\" href=\"#\">Reassign</a>";
         }
 
-        return sprintf('%1$s %2$s', $item['age'], $this->row_actions($actions) );
+        return sprintf('%1$s %2$s', $item['id'], $this->row_actions($actions) );
     }
 
     private function get_data() {
@@ -89,7 +109,7 @@ class Inquiry_List_Table extends WP_List_Table
         return $wpdb->get_results($wpdb->prepare(
             "
                 SELECT 
-                    i.age, i.gender, i.country, i.message, i.status, i.response, i.time,
+                    i.id, i.age, i.gender, i.country, i.message, i.status, i.response, i.time,
                     assignee.user_login as assignee_name,
                     assigner.user_login as assigner_name
                 FROM $INQUIRY_TABLE_NAME AS i
@@ -110,12 +130,13 @@ class Inquiry_List_Table extends WP_List_Table
 
     public function get_columns() {
         $columns = array(
+            "id" => "ID",
             "age" => "Age",
             "gender" => "Gender",
             "country" => "Country",
             "message" => "Message",
             "status" => "Status",
-            "response" => "Response",
+            "_response" => "Response",
             "time" => "Time",
             "assignee_name" => "Assignee",
             "assigner_name" => "Assigner",
@@ -138,12 +159,13 @@ class Inquiry_List_Table extends WP_List_Table
 
     public function column_default( $item, $column_name ) {
         switch( $column_name ) {
+            case 'id':
             case 'age':
             case 'gender':
             case 'country':
             case 'message':
             case 'status':
-            case 'response':
+            case '_response':
             case 'time':
             case 'assignee_name':
             case 'assigner_name':
