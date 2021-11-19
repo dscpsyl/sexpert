@@ -30,7 +30,12 @@ class Inquiry_Contributor_List_Table extends WP_List_Table
     }
 
     private function toggle_modal_text($v){
+        $v = preg_replace("/'/","\"",$v);
         return "<div onclick='toggle_modal_unchange(`$v`)'>" . $this->shorten($v) . "</div>";
+    }
+
+    private function escape($v){
+        return preg_replace("/'/","\"",$v);
     }
 
     private function get_parsed_data() {
@@ -73,8 +78,8 @@ class Inquiry_Contributor_List_Table extends WP_List_Table
         $inquiry_id = $item["id"];
         $current_user_id = get_current_user_id();
         $inquirer_info = $item['inquirer_info'];
-        $message = $item["message_raw"];
-        $response = $item["response_raw"];
+        $message = $this->escape($item["message_raw"]);
+        $response = $this->escape($item["response_raw"]);
         $comment_count = $this->get_comment_count($item["id"]);
         $plural_comment = $comment_count ? "s": "";
         $actions["comment"] = "<a onclick='open_comment_modal($inquiry_id, `$inquirer_info`, `$message`, `$response`)' 

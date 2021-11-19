@@ -39,10 +39,10 @@ function submit(WP_REST_Request $request,
         $new_data["status"] = $new_status;
         if ($new_status == 4){
             $configs = _get_config();
-            $content = str_replace("{message}", $inquiry_info_obj[0]->message, $configs->inquiry_received);
+            $content = str_replace("{message}", $inquiry_info_obj[0]->message, $configs->inquiry_resolved);
             $content = str_replace("{response}", $response, $content);
-            $content = str_replace("{wrap}", "\n", $content);
-            wp_mail($inquiry_info_obj[0]->email, $configs->inquiry_received_title, $content);
+            $content = str_replace("{wrap}", "<br>", $content);
+            wp_mail($inquiry_info_obj[0]->email, $configs->inquiry_resolved_title, $content);
         }
     }
 

@@ -9,6 +9,18 @@ require_once "table.php";
 
 function init_admin(){
     ?>
+    <div class='modal m0'>
+        <div class='modal-content'>
+            <span class='close-button' onclick="close_modal()">×</span>
+            <div id='m0_content'></div>
+        </div>
+    </div>
+    <div class='modal m1'>
+        <div class='modal-content'>
+            <span class='close-button' onclick="toggle_modal_unchange()">×</span>
+            <div id='m1_content'></div>
+        </div>
+    </div>
     <div class="wrap">
     <p id="status"></p>
     <button class="button button-primary" id="status_button" onclick="change_status()"></button>

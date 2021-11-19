@@ -7,7 +7,7 @@ $GENDER_TABLE_NAME = $wpdb->prefix . "sexpert_genders";
 $CONFIG_TABLE_NAME = $wpdb->prefix . "sexpert_config";
 
 $POST_TABLE_NAME = $wpdb->prefix . "posts";
-$LIST_LIMIT = 5;
+$LIST_LIMIT = 20;
 
 function CONVERT_STATUS_CODE($status_code){
     switch ($status_code) {

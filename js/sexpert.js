@@ -96,6 +96,12 @@ function toggle_modal(html) {
     }
 }
 
+let sexpert_cache = {};
+
+function set_cache(content) {
+
+}
+
 function toggle_modal_unchange(html) {
     let modal = document.querySelector(".m1");
     modal.classList.toggle("show-modal");
@@ -114,16 +120,16 @@ function submit_inquiry() {
     let gender = "Unknown";
     switch (gender_code) {
         case "0":
-            gender = "Female";
+            gender = "Cisgender Woman";
             break;
         case "1":
-            gender = "Male";
+            gender = " Cisgender Man";
             break;
         case "2":
-            gender = "Trans Male";
+            gender = "Transgender Man";
             break;
         case "3":
-            gender = "Trans Female";
+            gender = "Transgender Woman";
             break;
         case "4":
             gender = document.getElementById("not_listed_input").value;
@@ -135,7 +141,7 @@ function submit_inquiry() {
             gender = "Non-binary / Genderqueer";
             break;
         case "7":
-            gender = "Trans Non-binary / Genderqueer";
+            gender = "Questioning / I am not sure";
             return;
         default:
             alert("No gender specified");
@@ -164,7 +170,7 @@ function submit_inquiry() {
         'message': message,
         'status': 0,
     }, function() {
-        alert("success");
+        alert("Success");
         error_handler(this);
         location.reload();
     });
@@ -199,6 +205,7 @@ function open_inquiry_modal(i, inquirer_info, message, response) {
     toggle_modal(
         `
             <div class="blocks">
+                <strong>Inquiry ${i}</strong>
                 <div class='info'>${inquirer_info}</div
                 <br><br>
                 <strong>Inquiry</strong>
@@ -219,6 +226,14 @@ function open_inquiry_modal(i, inquirer_info, message, response) {
         `
     );
     editorInquiry[i] = SUNEDITOR.create((document.getElementById(`response${i}`)),{
+        buttonList: [
+            ['undo', 'redo'],
+            ['bold', 'underline', 'italic', 'strike', 'subscript', 'superscript'],
+            ['removeFormat'],
+            ['outdent', 'indent'],
+            ['fullScreen', 'showBlocks', 'codeView'],
+            ['preview', 'print']
+        ]
     });
 }
 
@@ -233,6 +248,7 @@ function open_comment_modal(i, inquirer_info, message, response) {
     toggle_modal(
         `
             <div class="blocks">
+                <strong>Inquiry ${i}</strong>
                 <div class='info'>${inquirer_info}</div>
                 <br><br>
                 <strong>Inquiry</strong>
@@ -405,17 +421,28 @@ function change_showing_status() {
     }
 }
 
-function show_gender_input(){
-    if (document.getElementById("notlisted").checked){
-        // show input
-        document.getElementById("not_listed_specify").innerHTML = `
-            <br>
-            <label>Enter Your Gender Identity Here</label><br>
-            <input class="sexpert-form-input" id="not_listed_input" />
-        `
-    } else {
-        document.getElementById("not_listed_specify").innerHTML = ""
-    }
+function open_assign_modal(inquiry_id){
+    get(URL_PREFIX + "sexpert/v1/list_users/", {
+        '_wpnonce': php_variables.nonce
+    }, function(){
+        console.log(this.responseText)
+        console.log(this.response)
+        let user_html = JSON.parse(this.responseText).message.map((v) => {
+            return `<option value="${v.ID}">${v.display_name}</option>`
+        });
+        toggle_modal_unchange(`
+            <strong>Inquiry ID: ${inquiry_id}</strong>
+            <select id="assign_user_id">
+                ${user_html}
+            </select>
+            <button class="button button-primary" onclick="admin_assign(${inquiry_id})">Assign</button>
+        `);
+    });
+}
+
+
+function admin_assign(i){
+    assign_inquiry(i, document.getElementById("assign_user_id").value);
 }
 
 window.onload = function () {
@@ -428,5 +455,61 @@ window.onload = function () {
             `
         });
         country_elem.innerHTML = options_html;
+        document.getElementById("not_listed_specify").innerHTML = `
+            <br>
+            <label>Enter your gender identity here if you selected "Other Gender Identity"</label><br>
+            <input class="sexpert-form-input" id="not_listed_input" />
+        `
     }
 };
+
+
+let sensitiveElOriginalCode = {};
+
+document.addEventListener("DOMContentLoaded", function() {
+    let sensitiveEl = document.querySelectorAll("[alt$='@sensitive']");
+    sensitiveEl.forEach((x, k) => {
+        sensitiveEl[k].style.opacity = "0.1";
+        sensitiveEl[k].style.transition = "1s";
+        sensitiveEl[k].parentElement.innerHTML = `
+            <div style="
+                position: absolute; 
+                width: ${x.offsetWidth}px; 
+                text-align: center; 
+                margin-top: ${x.offsetHeight / 2 - 20}px">
+                Sensitive image, please click to reveal
+            </div>
+        ` + sensitiveEl[k].parentElement.innerHTML;
+
+        // height = x.offsetWidth;Œ
+    //     sensitiveElOriginalCode[k] = x.parentElement.innerHTML;
+    //     sensitiveEl[k].parentElement.innerHTML = `
+    //     <div alt="@sensitive"
+    //         onclick="revealSensitive(${k})"
+    //         style="
+    //             padding: 10px;
+    //             width: ${x.offsetWidth}px;
+    //             height: ${x.offsetHeight}px;
+    //             min-width: 200px;
+    //             min-height: 100px;
+    //             background: #ccc;
+    //             text-align: center;
+    //         ">
+    //         <div style="margin: auto 0 ">Sensitive image, please click to reveal</div>
+    //     </div>
+    // `
+    });
+    sensitiveEl = document.querySelectorAll("[alt$='@sensitive']");
+    sensitiveEl.forEach((x, k) => {
+        sensitiveEl[k].parentElement.addEventListener("click", revealSensitive(k));
+    });
+
+});
+function revealSensitive(i) {
+    return ()=>{
+        console.log(1)
+        document.querySelectorAll("[alt$='@sensitive']")[i].removeEventListener("click", revealSensitive(i));
+        document.querySelectorAll("[alt$='@sensitive']")[i].parentElement.children[0].innerHTML = "";
+        document.querySelectorAll("[alt$='@sensitive']")[i].style.opacity = "1";
+    }
+}
