@@ -22,6 +22,7 @@
 * Add beautiful alert
 * Show comments
 * Admin panel
+* Fix issue with 'Simple Redirect 301' v.2.0.6
 
 ---
 
