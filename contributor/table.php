@@ -43,7 +43,7 @@ class Inquiry_Contributor_List_Table extends WP_List_Table
         foreach ($this->get_data() as $res){
             $result[] = array(
                 "id" => $res->id,
-                //"email" => $res->email,
+                "email" => $res->email,
                 "inquirer_info" => "Age: $res->age<br>Gender: $res->gender<br>Country: $res->country",
                 "message" => $this->toggle_modal_text($res->message),
                 "message_raw" => $res->message,
@@ -185,7 +185,7 @@ class Inquiry_Contributor_List_Table extends WP_List_Table
     public function get_columns() {
         $columns = array(
             "id" => "Inquiry ID",
-//            "email" => "Email",
+            "email" => "Email",
             "inquirer_info" => "Inquirer Info",
             "message" => "Message",
             "status" => "Status",
